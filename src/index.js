@@ -4,6 +4,7 @@ import { __ } from "@wordpress/i18n";
 import "./style.scss";
 import Edit from "./edit";
 import save from "./save";
+import icon from "./icon";
 import attributes from "./attributes";
 
 registerBlockType("block/wrapper", {
@@ -13,7 +14,7 @@ registerBlockType("block/wrapper", {
 		"wrapper"
 	),
 	category: "widgets",
-	icon: "smiley",
+	icon,
 	attributes,
 	edit: Edit,
 	save,
