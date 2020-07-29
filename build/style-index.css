@@ -13,6 +13,14 @@
   padding-left: 5%;
   padding-right: 5%; }
 
+.eb-inspector-btn-group {
+  display: flex;
+  padding-bottom: 5px; }
+
+.eb-inspector-btn-group button {
+  flex: 1;
+  padding-left: 40px !important; }
+
 .image-avatar {
   height: 100px;
   width: 100%;

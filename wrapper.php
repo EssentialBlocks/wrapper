@@ -35,14 +35,6 @@ function create_block_wrapper_block_init() {
 		$script_asset['version']
 	);
 
-	$editor_css = 'build/index.css';
-	wp_register_style(
-		'create-block-wrapper-block-editor',
-		plugins_url( $editor_css, __FILE__ ),
-		array(),
-		filemtime( "$dir/$editor_css" )
-	);
-
 	$style_css = 'build/style-index.css';
 	wp_register_style(
 		'create-block-wrapper-block',
@@ -51,9 +43,17 @@ function create_block_wrapper_block_init() {
 		filemtime( "$dir/$style_css" )
 	);
 
+  $frontend_js = 'src/frontend.js';
+  wp_enqueue_script(
+    'essential-blocks-wrapper-frontend',
+    plugins_url($frontend_js, __FILE__),
+    array( "jquery","wp-editor"),
+    true
+  );
+
+
 	register_block_type( 'block/wrapper', array(
 		'editor_script' => 'create-block-wrapper-block-editor',
-		'editor_style'  => 'create-block-wrapper-block-editor',
 		'style'         => 'create-block-wrapper-block',
 	) );
 }
