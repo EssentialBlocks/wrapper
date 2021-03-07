@@ -118,9 +118,7 @@ const Inspector = ({ attributes, setAttributes }) => {
 			{backgroundType === "gradient" && (
 				<PanelBody title={__("Gradient")} initialOpen={false}>
 					<GradientColorController
-						colorTwo="#8e9eab"
-						colorOne="#eef2f3"
-						angle={45}
+            gradientColor={gradientColor }
 						onChange={(gradientColor) => setAttributes({ gradientColor })}
 					/>
 				</PanelBody>
