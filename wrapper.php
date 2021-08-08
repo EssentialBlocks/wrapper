@@ -17,6 +17,8 @@
  *
  * @see https://developer.wordpress.org/block-editor/tutorials/block-tutorial/applying-styles-with-stylesheets/
  */
+require_once __DIR__ . '/lib/style-handler/style-handler.php';
+
 function create_block_wrapper_block_init() {
 	$dir = dirname( __FILE__ );
 
@@ -27,13 +29,17 @@ function create_block_wrapper_block_init() {
 		);
 	}
 	$index_js     = 'build/index.js';
-	$script_asset = require( $script_asset_path );
 	wp_register_script(
 		'create-block-wrapper-block-editor',
 		plugins_url( $index_js, __FILE__ ),
-		$script_asset['dependencies'],
-		$script_asset['version']
+		array(
+			'wp-blocks',
+			'wp-i18n',
+			'wp-element',
+		),
+		filemtime( "$dir/$index_js" )
 	);
+
 
 	$style_css = 'build/style-index.css';
 	wp_register_style(
@@ -51,10 +57,12 @@ function create_block_wrapper_block_init() {
     true
   );
 
-
-	register_block_type( 'block/wrapper', array(
+  if (!WP_Block_Type_Registry::get_instance()->is_registered('essential-blocks/wrapper')) {
+	register_block_type( 'wrapper/wrapper', array(
 		'editor_script' => 'create-block-wrapper-block-editor',
 		'style'         => 'create-block-wrapper-block',
 	) );
+  }
+	
 }
 add_action( 'init', 'create_block_wrapper_block_init' );

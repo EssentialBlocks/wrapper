@@ -1,5 +1,5 @@
 {
-	"name": "block/wrapper",
+	"name": "wrapper/wrapper",
 	"title": "Wrapper",
 	"category": "widgets",
 	"description": "Example block written with ESNext standard and JSX support – build step required.",

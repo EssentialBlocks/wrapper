@@ -7,7 +7,7 @@ import save from "./save";
 import icon from "./icon";
 import attributes from "./attributes";
 
-registerBlockType("block/wrapper", {
+registerBlockType("wrapper/wrapper", {
 	title: __("Wrapper", "wrapper"),
 	description: __(
 		"Example block written with ESNext standard and JSX support – build step required.",
