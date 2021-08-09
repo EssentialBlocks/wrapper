@@ -36,31 +36,23 @@ function create_block_wrapper_block_init() {
 			'wp-blocks',
 			'wp-i18n',
 			'wp-element',
+			'wp-block-editor',
 		),
 		filemtime( "$dir/$index_js" )
 	);
 
-
-	$style_css = 'build/style-index.css';
+	$editor_css = 'build/index.css';
 	wp_register_style(
-		'create-block-wrapper-block',
-		plugins_url( $style_css, __FILE__ ),
+		'create-block-wrapper-block-editor',
+		plugins_url($editor_css, __FILE__),
 		array(),
-		filemtime( "$dir/$style_css" )
+		filemtime("$dir/$editor_css")
 	);
-
-  $frontend_js = 'src/frontend.js';
-  wp_enqueue_script(
-    'essential-blocks-wrapper-frontend',
-    plugins_url($frontend_js, __FILE__),
-    array( "jquery","wp-editor"),
-    true
-  );
 
   if (!WP_Block_Type_Registry::get_instance()->is_registered('essential-blocks/wrapper')) {
 	register_block_type( 'wrapper/wrapper', array(
 		'editor_script' => 'create-block-wrapper-block-editor',
-		'style'         => 'create-block-wrapper-block',
+		'editor_style' => 'create-block-wrapper-block-editor',
 	) );
   }
 	

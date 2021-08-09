@@ -1,123 +1,63 @@
+import {
+	WRAPPER_BACKGROUND,
+	WRAPPER_WIDTH,
+	WRAPPER_BORDER,
+	WRAPPER_MARGIN,
+	WRAPPER_PADDING,
+} from "./constants";
+
+import {
+	generateResponsiveRangeAttributes,
+	generateBackgroundAttributes,
+	generateBorderShadowAttributes,
+	generateDimensionsAttributes,
+} from "../util/helpers";
+
 const attributes = {
-	contentWidth: {
+	// responsive control attributes ⬇
+	resOption: {
+		type: "string",
+		default: "Desktop",
+	},
+	// uniqueIdNumber attribute for making unique className
+	uniqueIdNumber: {
 		type: "number",
 	},
-	backgroundType: {
-		type: "string",
-		default: "fill",
-	},
-	backgroundColor: {
-		type: "string",
-	},
-	gradientColor: {
-		type: "string",
-		default: "linear-gradient(45deg,#eef2f3,#8e92ab)",
-	},
-	imageURL: {
+	blockId: {
 		type: "string",
 	},
-	imageID: {
+	blockRoot: {
 		type: "string",
+		default: "essential_block",
 	},
-	backgroundSize: {
+	blockMeta: {
+		type: "object",
+	},
+	wrapperAlign: {
 		type: "string",
-		default: "cover",
+		default: "center",
 	},
-	borderColor: {
-		type: "string",
-	},
-	borderStyle: {
-		type: "string",
-		default: "solid",
-	},
-	borderWidth: {
-		type: "number",
-	},
-	borderRadius: {
-		type: "number",
-	},
-	radiusUnit: {
-		type: "string",
-		default: "px",
-	},
-	hOffset: {
-		type: "number",
-	},
-	vOffset: {
-		type: "number",
-	},
-	blur: {
-		type: "number",
-	},
-	spread: {
-		type: "number",
-	},
-	shadowColor: {
-		type: "string",
-	},
-	inset: {
-		type: "boolean",
-		default: false,
-	},
-	marginUnit: {
-		type: "string",
-		default: "px",
-	},
-	marginTop: {
-		type: "number",
-	},
-	marginRight: {
-		type: "number",
-	},
-	marginBottom: {
-		type: "number",
-	},
-	marginLeft: {
-		type: "number",
-	},
-	paddingUnit: {
-		type: "string",
-		default: "px",
-	},
-	paddingTop: {
-		type: "number",
-	},
-	paddingRight: {
-		type: "number",
-	},
-	paddingBottom: {
-		type: "number",
-	},
-	paddingLeft: {
-		type: "number",
-	},
-	shadowType: {
-		type: "string",
-		default: "normal",
-	},
-	hoverHOffset: {
-		type: "number",
-	},
-	hoverVOffset: {
-		type: "number",
-	},
-	hoverBlur: {
-		type: "number",
-	},
-	hoverSpread: {
-		type: "number",
-	},
-	hoverShadowColor: {
-		type: "string",
-	},
-	hoverInset: {
-		type: "boolean",
-		default: false,
-	},
-	isHover: {
-		type: "boolean",
-		default: false,
-	},
+	// responsive range controller
+	...generateResponsiveRangeAttributes(WRAPPER_WIDTH),
+	// background control
+	...generateBackgroundAttributes(WRAPPER_BACKGROUND),
+	// border shadow control
+	...generateBorderShadowAttributes(WRAPPER_BORDER),
+	// dimension control
+	...generateDimensionsAttributes(WRAPPER_MARGIN, {
+		top: 28,
+		right: 0,
+		bottom: 28,
+		left: 0,
+		isLinked: false,
+	}),
+	...generateDimensionsAttributes(WRAPPER_PADDING, {
+		top: 20,
+		right: 20,
+		bottom: 20,
+		left: 20,
+		isLinked: false,
+	}),
 };
 
 export default attributes;

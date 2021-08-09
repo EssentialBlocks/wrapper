@@ -2,99 +2,304 @@
  * WordPress Dependencies
  *
  */
-import { __ } from "@wordpress/i18n";
-import { InnerBlocks } from "@wordpress/block-editor";
+const { __ } = wp.i18n;
+const {
+	InnerBlocks,
+	useBlockProps,
+	BlockControls,
+	AlignmentToolbar,
+} = wp.blockEditor;
+const { useEffect } = wp.element;
+const { select } = wp.data;
 
 /*
  * Internal  Dependencies
  *
  */
+import "./editor.scss";
 import Inspector from "./inspector";
-import { DEFAULT_BACKGROUND } from "./constants";
+import {
+	WRAPPER_WIDTH,
+	WRAPPER_BACKGROUND,
+	WRAPPER_BORDER,
+	WRAPPER_MARGIN,
+	WRAPPER_PADDING,
+} from "./constants";
+
+import {
+	mimmikCssForPreviewBtnClick,
+	duplicateBlockIdFix,
+	softMinifyCssStrings,
+	isCssExists,
+	generateResponsiveRangeStyles,
+	generateDimensionsControlStyles,
+	generateBackgroundControlStyles,
+	generateBorderShadowStyles,
+} from "../util/helpers";
 
 const Edit = (props) => {
-	const { isSelected, attributes, setAttributes } = props;
+	const { isSelected, attributes, setAttributes, clientId } = props;
 	const {
-		contentWidth,
-		backgroundType,
-		backgroundColor,
-		gradientColor,
-		imageURL,
-		backgroundSize,
-		borderColor,
-		borderStyle,
-		borderWidth,
-		borderRadius,
-		radiusUnit,
-		shadowColor,
-		hOffset,
-		vOffset,
-		blur,
-		spread,
-		inset,
-		marginUnit,
-		marginTop,
-		marginRight,
-		marginBottom,
-		marginLeft,
-		paddingUnit,
-		paddingTop,
-		paddingRight,
-		paddingBottom,
-		paddingLeft,
-		isHover,
-		hoverShadowColor,
-		hoverHOffset,
-		hoverVOffset,
-		hoverBlur,
-		hoverSpread,
-		hoverInset,
+		blockId,
+		blockMeta,
+		// responsive control attribute ⬇
+		resOption,
+		wrapperAlign,
 	} = attributes;
 
-	const outerStyles = {
-		marginTop: marginTop ? `${marginTop}${marginUnit}` : null,
-		marginRight: marginRight ? `${marginRight}${marginUnit}` : null,
-		marginBottom: marginBottom ? `${marginBottom}${marginUnit}` : null,
-		marginLeft: marginLeft ? `${marginLeft}${marginUnit}` : null,
-		paddingTop: paddingTop ? `${paddingTop}${paddingUnit}` : null,
-		paddingRight: paddingRight ? `${paddingRight}${paddingUnit}` : null,
-		paddingBottom: paddingBottom ? `${paddingBottom}${paddingUnit}` : null,
-		paddingLeft: paddingLeft ? `${paddingLeft}${paddingUnit}` : null,
-		backgroundImage:
-			backgroundType === "image" && imageURL
-				? `url("${imageURL}")`
-				: backgroundType === "gradient"
-				? gradientColor
-				: "none",
-		backgroundSize: backgroundSize,
-		backgroundColor:
-			(backgroundType === "fill" && backgroundColor) || DEFAULT_BACKGROUND,
-		border: `${borderWidth || 0}px ${borderStyle} ${borderColor || "#000000"}`,
-		borderRadius: `${borderRadius || 0}${radiusUnit}`,
-		boxShadow: isHover
-			? `${hoverHOffset || 0}px ${hoverVOffset || 0}px ${hoverBlur || 0}px ${
-					hoverSpread || 0
-			  }px ${hoverShadowColor || "#000000"} ${hoverInset ? "inset" : ""}`
-			: `${hOffset || 0}px ${vOffset || 0}px ${blur || 0}px ${spread || 0}px ${
-					shadowColor || "#000000"
-			  } ${inset ? "inset" : ""}`,
+	const innerBlockStyles = {
+		maxWidth: WRAPPER_WIDTH ? WRAPPER_WIDTH : null,
 	};
 
-	const innerBlockStyles = {
-		maxWidth: contentWidth ? contentWidth : null,
-	};
+	// wrapper margin
+	const {
+		dimensionStylesDesktop: wrapperMarginDesktop,
+		dimensionStylesTab: wrapperMarginTab,
+		dimensionStylesMobile: wrapperMarginMobile,
+	} = generateDimensionsControlStyles({
+		controlName: WRAPPER_MARGIN,
+		styleFor: "margin",
+		attributes,
+	});
+
+	// wrapper padding
+	const {
+		dimensionStylesDesktop: wrapperPaddingDesktop,
+		dimensionStylesTab: wrapperPaddingTab,
+		dimensionStylesMobile: wrapperPaddingMobile,
+	} = generateDimensionsControlStyles({
+		controlName: WRAPPER_PADDING,
+		styleFor: "padding",
+		attributes,
+	});
+
+	// wrapper background
+	const {
+		backgroundStylesDesktop,
+		hoverBackgroundStylesDesktop,
+		backgroundStylesTab,
+		hoverBackgroundStylesTab,
+		backgroundStylesMobile,
+		hoverBackgroundStylesMobile,
+		overlayStylesDesktop,
+		hoverOverlayStylesDesktop,
+		overlayStylesTab,
+		hoverOverlayStylesTab,
+		overlayStylesMobile,
+		hoverOverlayStylesMobile,
+		bgTransitionStyle,
+		ovlTransitionStyle,
+	} = generateBackgroundControlStyles({
+		attributes,
+		controlName: WRAPPER_BACKGROUND,
+	});
+
+	// wrapper border
+	const {
+		styesDesktop: bdShadowStyesDesktop,
+		styesTab: bdShadowStyesTab,
+		styesMobile: bdShadowStyesMobile,
+		stylesHoverDesktop: bdShadowStylesHoverDesktop,
+		stylesHoverTab: bdShadowStylesHoverTab,
+		stylesHoverMobile: bdShadowStylesHoverMobile,
+		transitionStyle: bdShadowTransitionStyle,
+	} = generateBorderShadowStyles({
+		controlName: WRAPPER_BORDER,
+		attributes,
+		// noShadow: true,
+		// noBorder: true,
+	});
+
+	// wrapper max-width
+	const {
+		rangeStylesDesktop: wrapperWidthDesktop,
+		rangeStylesTab: wrapperWidthTab,
+		rangeStylesMobile: wrapperWidthMobile,
+	} = generateResponsiveRangeStyles({
+		controlName: WRAPPER_WIDTH,
+		property: "max-width",
+		attributes,
+	});
+
+	const desktopStyles = `
+		.eb-wrapper-outer.${blockId} {
+			${wrapperMarginDesktop}
+			${wrapperPaddingDesktop}
+			${backgroundStylesDesktop}
+			${bdShadowStyesDesktop}
+			transition: ${bgTransitionStyle}, ${bdShadowTransitionStyle};
+		}
+
+		.eb-wrapper-outer.${blockId} .eb-wrapper-inner-blocks {
+			${wrapperWidthDesktop}
+		}
+
+		.eb-wrapper-outer.${blockId}:hover{	
+			${hoverBackgroundStylesDesktop}
+			${bdShadowStylesHoverDesktop}
+		}
+
+		.eb-wrapper-outer.${blockId}:before{
+			${overlayStylesDesktop}
+			transition: ${ovlTransitionStyle};
+		}
+
+		.eb-wrapper-outer.${blockId}:hover:before{	
+			${hoverOverlayStylesDesktop}
+		}
+	`;
+
+	const tabStyles = `
+		.eb-wrapper-outer.${blockId} {
+			${wrapperMarginTab}
+			${wrapperPaddingTab}
+			${backgroundStylesTab}
+			${bdShadowStyesTab}
+		}
+
+		.eb-wrapper-outer.${blockId} .eb-wrapper-inner-blocks {
+			${wrapperWidthTab}
+		}
+
+		.eb-wrapper-outer.${blockId}:hover{	
+			${hoverBackgroundStylesTab}
+			${bdShadowStylesHoverTab}
+		}
+
+		.eb-wrapper-outer.${blockId}:before{
+			${overlayStylesTab}
+		}
+
+		.eb-wrapper-outer.${blockId}:hover:before{	
+			${hoverOverlayStylesTab}
+		}
+	`;
+
+	const mobileStyles = `
+		.eb-wrapper-outer.${blockId} {
+			${wrapperMarginMobile}
+			${wrapperPaddingMobile}
+			${backgroundStylesMobile}
+			${bdShadowStyesMobile}
+		}
+
+		.eb-wrapper-outer.${blockId} .eb-wrapper-inner-blocks {
+			${wrapperWidthMobile}
+		}
+
+		.eb-wrapper-outer.${blockId}:hover{	
+			${hoverBackgroundStylesMobile}
+			${bdShadowStylesHoverMobile}
+		}
+
+		.eb-wrapper-outer.${blockId}:before{
+			${overlayStylesMobile}
+		}
+
+		.eb-wrapper-outer.${blockId}:hover:before{	
+			${hoverOverlayStylesMobile}
+		}
+	`;
+
+	// all css styles for large screen width (desktop/laptop) in strings ⬇
+	const desktopAllStyles = softMinifyCssStrings(`
+		${isCssExists(desktopStyles) ? desktopStyles : " "}
+	`);
+
+	// all css styles for Tab in strings ⬇
+	const tabAllStyles = softMinifyCssStrings(`
+		${isCssExists(tabStyles) ? tabStyles : " "}
+	`);
+
+	// all css styles for Mobile in strings ⬇
+	const mobileAllStyles = softMinifyCssStrings(`
+		${isCssExists(mobileStyles) ? mobileStyles : " "}
+	`);
+	// Set All Style in "blockMeta" Attribute
+	useEffect(() => {
+		const styleObject = {
+			desktop: desktopAllStyles,
+			tab: tabAllStyles,
+			mobile: mobileAllStyles,
+		};
+		if (JSON.stringify(blockMeta) != JSON.stringify(styleObject)) {
+			setAttributes({ blockMeta: styleObject });
+		}
+	}, [attributes]);
+
+	// this useEffect is for setting the resOption attribute to desktop/tab/mobile depending on the added 'eb-res-option-' class
+	useEffect(() => {
+		setAttributes({
+			resOption: select("core/edit-post").__experimentalGetPreviewDeviceType(),
+		});
+	}, []);
+
+	// this useEffect is for creating an unique id for each block's unique className by a random unique number
+	useEffect(() => {
+		const BLOCK_PREFIX = "eb-wrapper";
+		duplicateBlockIdFix({
+			BLOCK_PREFIX,
+			blockId,
+			setAttributes,
+			select,
+			clientId,
+		});
+	}, []);
+
+	// this useEffect is for mimmiking css when responsive options clicked from wordpress's 'preview' button
+	useEffect(() => {
+		mimmikCssForPreviewBtnClick({
+			domObj: document,
+			select,
+		});
+	}, []);
+
+	const blockProps = useBlockProps({
+		className: `eb-guten-block-main-parent-wrapper`,
+	});
 
 	return [
 		isSelected && <Inspector {...props} />,
-		<div
-			className="eb-wrapper-outer"
-			style={outerStyles}
-			onMouseEnter={() => setAttributes({ isHover: true })}
-			onMouseLeave={() => setAttributes({ isHover: false })}
-		>
-			<div className="eb-wrapper-inner">
-				<div className="eb-wrapper-inner-blocks" style={innerBlockStyles}>
-					<InnerBlocks />
+		// <BlockControls>
+		// 	<AlignmentToolbar
+		// 		value={wrapperAlign}
+		// 		onChange={(wrapperAlign) => setAttributes({ wrapperAlign })}
+		// 	/>
+		// </BlockControls>,
+		<div {...blockProps}>
+			<style>
+				{`
+				 ${desktopAllStyles}
+ 
+				 /* mimmikcssStart */
+ 
+				 ${resOption === "Tablet" ? tabAllStyles : " "}
+				 ${resOption === "Mobile" ? tabAllStyles + mobileAllStyles : " "}
+ 
+				 /* mimmikcssEnd */
+ 
+				 @media all and (max-width: 1024px) {	
+ 
+					 /* tabcssStart */			
+					 ${softMinifyCssStrings(tabAllStyles)}
+					 /* tabcssEnd */			
+				 
+				 }
+				 
+				 @media all and (max-width: 767px) {
+					 
+					 /* mobcssStart */			
+					 ${softMinifyCssStrings(mobileAllStyles)}
+					 /* mobcssEnd */			
+				 
+				 }
+				 `}
+			</style>
+			<div className={`eb-wrapper-outer ${blockId}`}>
+				<div className="eb-wrapper-inner">
+					<div className="eb-wrapper-inner-blocks">
+						<InnerBlocks />
+					</div>
 				</div>
 			</div>
 		</div>,

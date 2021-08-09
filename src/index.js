@@ -1,7 +1,6 @@
-import { registerBlockType } from "@wordpress/blocks";
-import { __ } from "@wordpress/i18n";
+const { __ } = wp.i18n;
+const { registerBlockType } = wp.blocks;
 
-import "./style.scss";
 import Edit from "./edit";
 import save from "./save";
 import icon from "./icon";
