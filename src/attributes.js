@@ -37,6 +37,10 @@ const attributes = {
 		type: "string",
 		default: "center",
 	},
+	isWrapperWidth: {
+		type: "boolean",
+		default: false,
+	},
 	// responsive range controller
 	...generateResponsiveRangeAttributes(WRAPPER_WIDTH),
 	// background control

@@ -10,13 +10,30 @@ const { InnerBlocks, useBlockProps } = wp.blockEditor;
  */
 
 const save = ({ attributes }) => {
-	const { blockId } = attributes;
+	const { blockId, wrapperAlign, isWrapperWidth } = attributes;
+
+	const alignmentClass =
+		wrapperAlign === "center"
+			? "eb-wrapper-align-center"
+			: wrapperAlign === "right"
+			? "eb-wrapper-align-right"
+			: "";
 
 	return (
-		<div className={`eb-wrapper-outer ${blockId}`}>
-			<div className="eb-wrapper-inner">
-				<div className="eb-wrapper-inner-blocks">
-					<InnerBlocks.Content />
+		<div {...useBlockProps.save()}>
+			<div
+				className={`eb-wrapper-outer ${blockId}${
+					isWrapperWidth ? ` ${alignmentClass}` : ""
+				}`}
+			>
+				<div className="eb-wrapper-inner">
+					<div
+						className={`eb-wrapper-inner-blocks${
+							!isWrapperWidth ? ` ${alignmentClass}` : ""
+						}`}
+					>
+						<InnerBlocks.Content />
+					</div>
 				</div>
 			</div>
 		</div>

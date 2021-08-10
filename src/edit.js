@@ -45,6 +45,7 @@ const Edit = (props) => {
 		// responsive control attribute ⬇
 		resOption,
 		wrapperAlign,
+		isWrapperWidth,
 	} = attributes;
 
 	const innerBlockStyles = {
@@ -106,8 +107,6 @@ const Edit = (props) => {
 	} = generateBorderShadowStyles({
 		controlName: WRAPPER_BORDER,
 		attributes,
-		// noShadow: true,
-		// noBorder: true,
 	});
 
 	// wrapper max-width
@@ -117,21 +116,33 @@ const Edit = (props) => {
 		rangeStylesMobile: wrapperWidthMobile,
 	} = generateResponsiveRangeStyles({
 		controlName: WRAPPER_WIDTH,
-		property: "max-width",
+		property: "width",
 		attributes,
 	});
 
 	const desktopStyles = `
+		.eb-wrapper-align-center {
+			margin-right: auto !important;
+			margin-left: auto !important;
+		}
+
+		.eb-wrapper-align-right {
+			margin-left: auto !important;
+		}
+
 		.eb-wrapper-outer.${blockId} {
 			${wrapperMarginDesktop}
 			${wrapperPaddingDesktop}
 			${backgroundStylesDesktop}
 			${bdShadowStyesDesktop}
+			${isWrapperWidth ? wrapperWidthDesktop : ""}
+			max-width: 100%;
 			transition: ${bgTransitionStyle}, ${bdShadowTransitionStyle};
 		}
 
 		.eb-wrapper-outer.${blockId} .eb-wrapper-inner-blocks {
-			${wrapperWidthDesktop}
+			${!isWrapperWidth ? wrapperWidthDesktop : ""}
+			max-width: 100%;
 		}
 
 		.eb-wrapper-outer.${blockId}:hover{	
@@ -258,14 +269,21 @@ const Edit = (props) => {
 		className: `eb-guten-block-main-parent-wrapper`,
 	});
 
+	const alignmentClass =
+		wrapperAlign === "center"
+			? "eb-wrapper-align-center"
+			: wrapperAlign === "right"
+			? "eb-wrapper-align-right"
+			: "";
+
 	return [
 		isSelected && <Inspector {...props} />,
-		// <BlockControls>
-		// 	<AlignmentToolbar
-		// 		value={wrapperAlign}
-		// 		onChange={(wrapperAlign) => setAttributes({ wrapperAlign })}
-		// 	/>
-		// </BlockControls>,
+		<BlockControls>
+			<AlignmentToolbar
+				value={wrapperAlign}
+				onChange={(wrapperAlign) => setAttributes({ wrapperAlign })}
+			/>
+		</BlockControls>,
 		<div {...blockProps}>
 			<style>
 				{`
@@ -295,9 +313,17 @@ const Edit = (props) => {
 				 }
 				 `}
 			</style>
-			<div className={`eb-wrapper-outer ${blockId}`}>
+			<div
+				className={`eb-wrapper-outer ${blockId}${
+					isWrapperWidth ? ` ${alignmentClass}` : ""
+				}`}
+			>
 				<div className="eb-wrapper-inner">
-					<div className="eb-wrapper-inner-blocks">
+					<div
+						className={`eb-wrapper-inner-blocks${
+							!isWrapperWidth ? ` ${alignmentClass}` : ""
+						}`}
+					>
 						<InnerBlocks />
 					</div>
 				</div>

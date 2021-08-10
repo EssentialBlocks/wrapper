@@ -3,7 +3,7 @@
  *
  */
 const { __ } = wp.i18n;
-const { PanelBody, TabPanel } = wp.components;
+const { PanelBody, TabPanel, ToggleControl } = wp.components;
 const { useEffect } = wp.element;
 const { InspectorControls } = wp.blockEditor;
 const { select } = wp.data;
@@ -29,7 +29,7 @@ import BorderShadowControl from "../util/border-shadow-control";
 import ResponsiveDimensionsControl from "../util/dimensions-control-v2";
 
 const Inspector = ({ attributes, setAttributes }) => {
-	const { resOption } = attributes;
+	const { resOption, isWrapperWidth } = attributes;
 
 	// this useEffect is for setting the resOption attribute to desktop/tab/mobile depending on the added 'eb-res-option-' class only the first time once
 	useEffect(() => {
@@ -90,13 +90,22 @@ const Inspector = ({ attributes, setAttributes }) => {
 								<>
 									<PanelBody>
 										<ResponsiveRangeController
-											baseLabel={__("Content Max Width", "wrapper")}
+											baseLabel={__("Content Width", "wrapper")}
 											controlName={WRAPPER_WIDTH}
 											resRequiredProps={resRequiredProps}
 											min={0}
 											max={1600}
 											step={1}
 											noUnits
+										/>
+										<ToggleControl
+											label={__("Use Width In Wrapper", "wrapper")}
+											checked={isWrapperWidth}
+											onChange={() => {
+												setAttributes({
+													isWrapperWidth: !isWrapperWidth,
+												});
+											}}
 										/>
 									</PanelBody>
 								</>
