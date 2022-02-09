@@ -6,12 +6,19 @@ import {
 	WRAPPER_PADDING,
 } from "./constants";
 
-import {
+// import {
+// 	generateResponsiveRangeAttributes,
+// 	generateBackgroundAttributes,
+// 	generateBorderShadowAttributes,
+// 	generateDimensionsAttributes,
+// } from "../../../util/helpers";
+
+const {
 	generateResponsiveRangeAttributes,
 	generateBackgroundAttributes,
 	generateBorderShadowAttributes,
 	generateDimensionsAttributes,
-} from "../util/helpers";
+} = window.EBWrapperControls;
 
 const attributes = {
 	// responsive control attributes ⬇

@@ -1,7 +1,3 @@
-const { __ } = wp.i18n;
-
-export const DEFAULT_BACKGROUND = "#e9ecef";
-
 // responsive range control
 export const WRAPPER_WIDTH = "wrpWidth";
 

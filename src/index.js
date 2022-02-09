@@ -1,20 +1,22 @@
-const { __ } = wp.i18n;
-const { registerBlockType } = wp.blocks;
+import { __ } from "@wordpress/i18n";
 
 import Edit from "./edit";
 import save from "./save";
-import icon from "./icon";
+import example from "./example";
+import { WrapperIcon } from "./icon";
 import attributes from "./attributes";
+import metadata from "../block.json";
+const { ebConditionalRegisterBlockType } = EBWrapperControls;
 
-registerBlockType("wrapper/wrapper", {
-	title: __("Wrapper", "wrapper"),
-	description: __(
-		"Example block written with ESNext standard and JSX support – build step required.",
-		"wrapper"
-	),
-	category: "widgets",
-	icon,
+ebConditionalRegisterBlockType(metadata, {
+	keywords: [
+		__("wrapper", "wrapper"),
+		__("eb essential", "wrapper"),
+		__("container", "wrapper"),
+	],
+	icon: WrapperIcon,
 	attributes,
 	edit: Edit,
 	save,
+	example,
 });

@@ -1,22 +1,26 @@
 /*
  * WordPress Dependencies
- *
  */
-const { __ } = wp.i18n;
-const {
+import { __ } from "@wordpress/i18n";
+import { useEffect } from "@wordpress/element";
+import {
 	InnerBlocks,
 	useBlockProps,
 	BlockControls,
 	AlignmentToolbar,
-} = wp.blockEditor;
-const { useEffect } = wp.element;
-const { select } = wp.data;
+} from "@wordpress/block-editor";
+import { select } from "@wordpress/data";
+
+/**
+ * External depencencies
+ */
 
 /*
  * Internal  Dependencies
  *
  */
-import "./editor.scss";
+import classnames from "classnames";
+
 import Inspector from "./inspector";
 import {
 	WRAPPER_WIDTH,
@@ -26,19 +30,33 @@ import {
 	WRAPPER_PADDING,
 } from "./constants";
 
-import {
-	mimmikCssForPreviewBtnClick,
+// import {
+// 	mimmikCssForPreviewBtnClick,
+// 	duplicateBlockIdFix,
+// 	softMinifyCssStrings,
+// 	generateResponsiveRangeStyles,
+// 	generateDimensionsControlStyles,
+// 	generateBackgroundControlStyles,
+// 	generateBorderShadowStyles,
+// } from "../../../util/helpers";
+
+const {
+	// mimmikCssForPreviewBtnClick,
 	duplicateBlockIdFix,
 	softMinifyCssStrings,
-	isCssExists,
 	generateResponsiveRangeStyles,
 	generateDimensionsControlStyles,
 	generateBackgroundControlStyles,
 	generateBorderShadowStyles,
-} from "../util/helpers";
+} = window.EBWrapperControls;
+
+const editorStoreForGettingPreivew =
+	eb_style_handler.editor_type === "edit-site"
+		? "core/edit-site"
+		: "core/edit-post";
 
 const Edit = (props) => {
-	const { isSelected, attributes, setAttributes, clientId } = props;
+	const { isSelected, attributes, setAttributes, className, clientId } = props;
 	const {
 		blockId,
 		blockMeta,
@@ -47,10 +65,6 @@ const Edit = (props) => {
 		wrapperAlign,
 		isWrapperWidth,
 	} = attributes;
-
-	const innerBlockStyles = {
-		maxWidth: WRAPPER_WIDTH ? WRAPPER_WIDTH : null,
-	};
 
 	// wrapper margin
 	const {
@@ -143,6 +157,7 @@ const Edit = (props) => {
 		.eb-wrapper-outer.${blockId} .eb-wrapper-inner-blocks {
 			${!isWrapperWidth ? wrapperWidthDesktop : ""}
 			max-width: 100%;
+			position: relative;
 		}
 
 		.eb-wrapper-outer.${blockId}:hover{	
@@ -214,17 +229,17 @@ const Edit = (props) => {
 
 	// all css styles for large screen width (desktop/laptop) in strings ⬇
 	const desktopAllStyles = softMinifyCssStrings(`
-		${isCssExists(desktopStyles) ? desktopStyles : " "}
+		${desktopStyles}
 	`);
 
 	// all css styles for Tab in strings ⬇
 	const tabAllStyles = softMinifyCssStrings(`
-		${isCssExists(tabStyles) ? tabStyles : " "}
+		${tabStyles}
 	`);
 
 	// all css styles for Mobile in strings ⬇
 	const mobileAllStyles = softMinifyCssStrings(`
-		${isCssExists(mobileStyles) ? mobileStyles : " "}
+		${mobileStyles}
 	`);
 	// Set All Style in "blockMeta" Attribute
 	useEffect(() => {
@@ -241,7 +256,9 @@ const Edit = (props) => {
 	// this useEffect is for setting the resOption attribute to desktop/tab/mobile depending on the added 'eb-res-option-' class
 	useEffect(() => {
 		setAttributes({
-			resOption: select("core/edit-post").__experimentalGetPreviewDeviceType(),
+			resOption: select(
+				editorStoreForGettingPreivew
+			).__experimentalGetPreviewDeviceType(),
 		});
 	}, []);
 
@@ -257,16 +274,16 @@ const Edit = (props) => {
 		});
 	}, []);
 
-	// this useEffect is for mimmiking css when responsive options clicked from wordpress's 'preview' button
-	useEffect(() => {
-		mimmikCssForPreviewBtnClick({
-			domObj: document,
-			select,
-		});
-	}, []);
+	// // this useEffect is for mimmiking css when responsive options clicked from wordpress's 'preview' button
+	// useEffect(() => {
+	// 	mimmikCssForPreviewBtnClick({
+	// 		domObj: document,
+	// 		select,
+	// 	});
+	// }, []);
 
 	const blockProps = useBlockProps({
-		className: `eb-guten-block-main-parent-wrapper`,
+		className: classnames(className, `eb-guten-block-main-parent-wrapper`),
 	});
 
 	const alignmentClass =
@@ -276,17 +293,18 @@ const Edit = (props) => {
 			? "eb-wrapper-align-right"
 			: "";
 
-	return [
-		isSelected && <Inspector {...props} />,
-		<BlockControls>
-			<AlignmentToolbar
-				value={wrapperAlign}
-				onChange={(wrapperAlign) => setAttributes({ wrapperAlign })}
-			/>
-		</BlockControls>,
-		<div {...blockProps}>
-			<style>
-				{`
+	return (
+		<>
+			{isSelected && <Inspector {...props} />}
+			<BlockControls>
+				<AlignmentToolbar
+					value={wrapperAlign}
+					onChange={(wrapperAlign) => setAttributes({ wrapperAlign })}
+				/>
+			</BlockControls>
+			<div {...blockProps}>
+				<style>
+					{`
 				 ${desktopAllStyles}
  
 				 /* mimmikcssStart */
@@ -312,24 +330,31 @@ const Edit = (props) => {
 				 
 				 }
 				 `}
-			</style>
-			<div
-				className={`eb-wrapper-outer ${blockId}${
-					isWrapperWidth ? ` ${alignmentClass}` : ""
-				}`}
-			>
-				<div className="eb-wrapper-inner">
-					<div
-						className={`eb-wrapper-inner-blocks${
-							!isWrapperWidth ? ` ${alignmentClass}` : ""
-						}`}
-					>
-						<InnerBlocks />
+				</style>
+				<div
+					className={`eb-wrapper-outer ${blockId}${
+						isWrapperWidth ? ` ${alignmentClass}` : ""
+					}`}
+				>
+					<div className="eb-wrapper-inner">
+						<div
+							className={`eb-wrapper-inner-blocks${
+								!isWrapperWidth ? ` ${alignmentClass}` : ""
+							}`}
+						>
+							<InnerBlocks
+								renderAppender={
+									select("core/block-editor").getBlockOrder(clientId).length > 0
+										? undefined
+										: InnerBlocks.ButtonBlockAppender
+								}
+							/>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>,
-	];
+		</>
+	);
 };
 
 export default Edit;

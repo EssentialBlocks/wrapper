@@ -2,7 +2,7 @@
  * WordPress Dependencies
  *
  */
-const { InnerBlocks, useBlockProps } = wp.blockEditor;
+import { useBlockProps, InnerBlocks } from "@wordpress/block-editor";
 
 /*
  * Internal  Dependencies

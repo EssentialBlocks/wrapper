@@ -4,7 +4,5 @@
 	"category": "widgets",
 	"description": "Example block written with ESNext standard and JSX support – build step required.",
 	"textdomain": "wrapper",
-	"editorScript": "file:./build/index.js",
-	"editorStyle": "file:./build/index.css",
-	"style": "file:./build/style-index.css"
+	"editorScript": "file:./dist/index.js"
 }

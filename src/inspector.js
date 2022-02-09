@@ -2,15 +2,11 @@
  * WordPress dependencies
  *
  */
-const { __ } = wp.i18n;
-const { PanelBody, TabPanel, ToggleControl } = wp.components;
-const { useEffect } = wp.element;
-const { InspectorControls } = wp.blockEditor;
-const { select } = wp.data;
-import {
-	mimmikCssForResBtns,
-	mimmikCssOnPreviewBtnClickWhileBlockSelected,
-} from "../util/helpers";
+import { __ } from "@wordpress/i18n";
+import { useEffect } from "@wordpress/element";
+import { InspectorControls } from "@wordpress/block-editor";
+import { PanelBody, TabPanel, ToggleControl } from "@wordpress/components";
+import { select } from "@wordpress/data";
 /**
  * Internal dependencies
  *
@@ -23,10 +19,31 @@ import {
 	WRAPPER_PADDING,
 } from "./constants";
 import objAttributes from "./attributes";
-import ResponsiveRangeController from "../util/responsive-range-control";
-import BackgroundControl from "../util/background-control";
-import BorderShadowControl from "../util/border-shadow-control";
-import ResponsiveDimensionsControl from "../util/dimensions-control-v2";
+
+// import {
+// 	mimmikCssForResBtns,
+// 	mimmikCssOnPreviewBtnClickWhileBlockSelected,
+// } from "../../../util/helpers";
+// import ResponsiveRangeController from "../../../util/responsive-range-control";
+// import BackgroundControl from "../../../util/background-control";
+// import BorderShadowControl from "../../../util/border-shadow-control";
+// import ResponsiveDimensionsControl from "../../../util/dimensions-control-v2";
+
+const {
+	// mimmikCssForResBtns,
+	// mimmikCssOnPreviewBtnClickWhileBlockSelected,
+
+	//
+	ResponsiveRangeController,
+	BackgroundControl,
+	BorderShadowControl,
+	ResponsiveDimensionsControl,
+} = window.EBWrapperControls;
+
+const editorStoreForGettingPreivew =
+	eb_style_handler.editor_type === "edit-site"
+		? "core/edit-site"
+		: "core/edit-post";
 
 const Inspector = ({ attributes, setAttributes }) => {
 	const { resOption, isWrapperWidth } = attributes;
@@ -34,29 +51,29 @@ const Inspector = ({ attributes, setAttributes }) => {
 	// this useEffect is for setting the resOption attribute to desktop/tab/mobile depending on the added 'eb-res-option-' class only the first time once
 	useEffect(() => {
 		setAttributes({
-			resOption: select("core/edit-post").__experimentalGetPreviewDeviceType(),
+			resOption: select(editorStoreForGettingPreivew).__experimentalGetPreviewDeviceType(),
 		});
 	}, []);
 
-	// this useEffect is for mimmiking css for all the eb blocks on resOption changing
-	useEffect(() => {
-		mimmikCssForResBtns({
-			domObj: document,
-			resOption,
-		});
-	}, [resOption]);
+	// // this useEffect is for mimmiking css for all the eb blocks on resOption changing
+	// useEffect(() => {
+	// 	mimmikCssForResBtns({
+	// 		domObj: document,
+	// 		resOption,
+	// 	});
+	// }, [resOption]);
 
-	// this useEffect is to mimmik css for responsive preview in the editor page when clicking the buttons in the 'Preview button of wordpress' located beside the 'update' button while any block is selected and it's inspector panel is mounted in the DOM
-	useEffect(() => {
-		const cleanUp = mimmikCssOnPreviewBtnClickWhileBlockSelected({
-			domObj: document,
-			select,
-			setAttributes,
-		});
-		return () => {
-			cleanUp();
-		};
-	}, []);
+	// // this useEffect is to mimmik css for responsive preview in the editor page when clicking the buttons in the 'Preview button of wordpress' located beside the 'update' button while any block is selected and it's inspector panel is mounted in the DOM
+	// useEffect(() => {
+	// 	const cleanUp = mimmikCssOnPreviewBtnClickWhileBlockSelected({
+	// 		domObj: document,
+	// 		select,
+	// 		setAttributes,
+	// 	});
+	// 	return () => {
+	// 		cleanUp();
+	// 	};
+	// }, []);
 
 	const resRequiredProps = {
 		setAttributes,
@@ -74,12 +91,12 @@ const Inspector = ({ attributes, setAttributes }) => {
 					tabs={[
 						{
 							name: "general",
-							title: "General",
+							title: __("General", "wrapper"),
 							className: "eb-tab general",
 						},
 						{
 							name: "styles",
-							title: "Styles",
+							title: __("Style", "wrapper"),
 							className: "eb-tab styles",
 						},
 					]}
